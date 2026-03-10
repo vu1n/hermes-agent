@@ -1,8 +1,5 @@
 """Depeche intake tool — run the feed intake loop."""
 
-import json
-import os
-
 from tools.registry import registry
 
 SCHEMA = {
@@ -30,38 +27,26 @@ SCHEMA = {
                 ),
             },
         },
+        "required": [],
     },
 }
 
 
 async def _handler(args, **kw):
-    from depeche.config import get_settings
-    from depeche.db.connection import get_db
     from depeche.ingestion.videpoches import run_intake
+    from depeche_integration.helpers import with_depeche_conn
 
-    settings = get_settings()
-    conn = get_db(settings.database_url)
-    try:
-        result = await run_intake(
-            feeds=args.get("feeds"),
-            conn=conn,
-            settings=settings,
-        )
-        return json.dumps(result)
-    finally:
-        conn.close()
+    return await with_depeche_conn(run_intake, feeds=args.get("feeds"))
 
 
-def _check():
-    return bool(os.getenv("DATABASE_URL"))
-
+from depeche_integration.helpers import check_depeche
 
 registry.register(
     name="depeche_intake",
     toolset="depeche",
     schema=SCHEMA,
-    handler=lambda args, **kw: _handler(args, **kw),
-    check_fn=_check,
+    handler=_handler,
+    check_fn=check_depeche(),
     requires_env=["DATABASE_URL"],
     is_async=True,
 )

@@ -1,9 +1,8 @@
 """Depeche query tool — fan-out search across knowledge sources."""
 
-import json
-import os
-
 from tools.registry import registry
+
+_DEFAULT_SOURCES = ["artifacts", "graph", "memory", "session", "interests"]
 
 SCHEMA = {
     "name": "depeche_query",
@@ -22,13 +21,7 @@ SCHEMA = {
             "sources": {
                 "type": "array",
                 "items": {"type": "string"},
-                "default": [
-                    "artifacts",
-                    "graph",
-                    "memory",
-                    "session",
-                    "interests",
-                ],
+                "default": _DEFAULT_SOURCES,
                 "description": (
                     "Knowledge sources to query. Defaults to all five: "
                     "artifacts, graph, memory, session, interests."
@@ -46,38 +39,25 @@ SCHEMA = {
 
 
 async def _handler(args, **kw):
-    from depeche.config import get_settings
-    from depeche.db.connection import get_db
     from depeche.tools.query import query_handler
+    from depeche_integration.helpers import with_depeche_conn
 
-    settings = get_settings()
-    conn = get_db(settings.database_url)
-    try:
-        result = await query_handler(
-            q=args["q"],
-            sources=args.get(
-                "sources",
-                ["artifacts", "graph", "memory", "session", "interests"],
-            ),
-            top_k=args.get("top_k", 10),
-            conn=conn,
-            settings=settings,
-        )
-        return json.dumps(result)
-    finally:
-        conn.close()
+    return await with_depeche_conn(
+        query_handler,
+        q=args["q"],
+        sources=args.get("sources", _DEFAULT_SOURCES),
+        top_k=args.get("top_k", 10),
+    )
 
 
-def _check():
-    return bool(os.getenv("DATABASE_URL"))
-
+from depeche_integration.helpers import check_depeche
 
 registry.register(
     name="depeche_query",
     toolset="depeche",
     schema=SCHEMA,
-    handler=lambda args, **kw: _handler(args, **kw),
-    check_fn=_check,
+    handler=_handler,
+    check_fn=check_depeche(),
     requires_env=["DATABASE_URL"],
     is_async=True,
 )

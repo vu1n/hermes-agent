@@ -1,8 +1,5 @@
 """Depeche ingest tool — extract, process, and store a URL as an artifact."""
 
-import json
-import os
-
 from tools.registry import registry
 
 SCHEMA = {
@@ -25,33 +22,20 @@ SCHEMA = {
 
 
 async def _handler(args, **kw):
-    from depeche.config import get_settings
-    from depeche.db.connection import get_db
     from depeche.tools.ingest import ingest_url_handler
+    from depeche_integration.helpers import with_depeche_conn
 
-    settings = get_settings()
-    conn = get_db(settings.database_url)
-    try:
-        result = await ingest_url_handler(
-            url=args["url"],
-            conn=conn,
-            settings=settings,
-        )
-        return json.dumps(result)
-    finally:
-        conn.close()
+    return await with_depeche_conn(ingest_url_handler, url=args["url"])
 
 
-def _check():
-    return bool(os.getenv("DATABASE_URL")) and bool(os.getenv("FIRECRAWL_API_KEY"))
-
+from depeche_integration.helpers import check_depeche
 
 registry.register(
     name="depeche_ingest",
     toolset="depeche",
     schema=SCHEMA,
-    handler=lambda args, **kw: _handler(args, **kw),
-    check_fn=_check,
+    handler=_handler,
+    check_fn=check_depeche("FIRECRAWL_API_KEY"),
     requires_env=["DATABASE_URL", "FIRECRAWL_API_KEY"],
     is_async=True,
 )

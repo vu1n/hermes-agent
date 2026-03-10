@@ -1,8 +1,5 @@
 """Depeche research tool — deep research on a question."""
 
-import json
-import os
-
 from tools.registry import registry
 
 SCHEMA = {
@@ -31,34 +28,24 @@ SCHEMA = {
 
 
 async def _handler(args, **kw):
-    from depeche.config import get_settings
-    from depeche.db.connection import get_db
     from depeche.tools.research import research_handler
+    from depeche_integration.helpers import with_depeche_conn
 
-    settings = get_settings()
-    conn = get_db(settings.database_url)
-    try:
-        result = await research_handler(
-            question=args["question"],
-            context=args.get("context", ""),
-            conn=conn,
-            settings=settings,
-        )
-        return json.dumps(result)
-    finally:
-        conn.close()
+    return await with_depeche_conn(
+        research_handler,
+        question=args["question"],
+        context=args.get("context", ""),
+    )
 
 
-def _check():
-    return bool(os.getenv("DATABASE_URL"))
-
+from depeche_integration.helpers import check_depeche
 
 registry.register(
     name="depeche_research",
     toolset="depeche",
     schema=SCHEMA,
-    handler=lambda args, **kw: _handler(args, **kw),
-    check_fn=_check,
+    handler=_handler,
+    check_fn=check_depeche(),
     requires_env=["DATABASE_URL"],
     is_async=True,
 )
