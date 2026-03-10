@@ -50,4 +50,3 @@ skills/.hub/
 ignored/
 .worktrees/
 *.db
-file:depeche.db*
