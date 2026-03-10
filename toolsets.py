@@ -64,6 +64,9 @@ _HERMES_CORE_TOOLS = [
     "query_user_context",
     # Home Assistant smart home control (gated on HASS_TOKEN via check_fn)
     "ha_list_entities", "ha_get_state", "ha_list_services", "ha_call_service",
+    # Depeche personal intelligence (gated on DATABASE_URL via check_fn)
+    "depeche_query", "depeche_ingest", "depeche_dossier",
+    "depeche_intake", "depeche_research", "depeche_publish_brief",
 ]
 
 
@@ -199,6 +202,12 @@ TOOLSETS = {
     "homeassistant": {
         "description": "Home Assistant smart home control and monitoring",
         "tools": ["ha_list_entities", "ha_get_state", "ha_list_services", "ha_call_service"],
+        "includes": []
+    },
+
+    "depeche": {
+        "description": "Personal intelligence tools: knowledge search, article ingestion, research, dossier generation, and publishing",
+        "tools": ["depeche_query", "depeche_ingest", "depeche_dossier", "depeche_intake", "depeche_research", "depeche_publish_brief"],
         "includes": []
     },
 

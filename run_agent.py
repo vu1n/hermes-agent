@@ -1419,6 +1419,15 @@ class AIAgent:
             if context_files_prompt:
                 prompt_parts.append(context_files_prompt)
 
+        # Depeche intelligence context (Tier 2 memory)
+        try:
+            from depeche_integration.context import depeche_prefetch
+            depeche_ctx = depeche_prefetch()
+            if depeche_ctx:
+                prompt_parts.append(depeche_ctx)
+        except ImportError:
+            pass  # depeche not installed
+
         from hermes_time import now as _hermes_now
         now = _hermes_now()
         prompt_parts.append(

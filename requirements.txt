@@ -34,6 +34,9 @@ edge-tts
 # Optional: For cron expression parsing (cronjob scheduling)
 croniter
 
+# Optional: Depeche personal intelligence tools
+depeche @ git+https://github.com/vu1n/depeche.git@main
+
 # Optional: For messaging platform integrations (gateway)
 python-telegram-bot>=20.0
 discord.py>=2.0

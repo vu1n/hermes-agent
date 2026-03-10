@@ -95,6 +95,12 @@ def _discover_tools():
         "tools.send_message_tool",
         "tools.honcho_tools",
         "tools.homeassistant_tool",
+        "tools.depeche_query",
+        "tools.depeche_ingest",
+        "tools.depeche_dossier",
+        "tools.depeche_intake",
+        "tools.depeche_research",
+        "tools.depeche_publish_brief",
     ]
     import importlib
     for mod_name in _modules:
