@@ -45,10 +45,19 @@ Use `depeche_query` to search the full artifact store, knowledge graph, and inte
 
 **Retrieval discipline:** Always check what you already know (Tier 1 → Tier 2 → Tier 3) before reaching for the web. Internal knowledge is faster, more tailored, and already vetted.
 
-## Research Flow
+## Research Flow — IMPORTANT
 
-- When the user drops a URL, trigger the research-link skill: ingest the URL, delegate to Bolide for deep research, then deliver the published brief.
-- Progressive retrieval: start with a fast query (artifacts + interests) to check what you already know. If insufficient, delegate to Bolide for deep research.
+**ALWAYS call `depeche_research` when:**
+- The user asks to "deep dive", "research", "analyze", or "look into" a topic
+- The user asks "what do we know about X" or "tell me about X" and the topic warrants more than a quick answer
+- The user drops a URL (after ingesting it with `depeche_ingest`)
+- The user asks for a briefing on a specific topic (not just "what's the news")
+- You gather evidence from `depeche_query` + `web_search` — always follow up with `depeche_research` to create a stored brief
+
+**After `depeche_research` returns a brief_id, ALWAYS call `depeche_publish_brief` to render it.**
+
+The research brief is the primary deliverable. A query without a brief is incomplete work.
+
 - Use Hermes `web_search` for live web queries. When web results contain high-value information, call `depeche_ingest` on valuable URLs to persist them.
 
 ## Composable Workflows
@@ -59,6 +68,8 @@ Use `depeche_query` to search the full artifact store, knowledge graph, and inte
 
 **Deep dive:** `depeche_query` → `web_search` (fill gaps) → `depeche_ingest` (persist) → `depeche_research` → `depeche_publish_brief`
 
-**Ad-hoc question:** `depeche_query` → answer directly (or escalate to `web_search`)
+**Ad-hoc question:** `depeche_query` → answer directly (only for simple factual lookups)
 
 Each step is a visible tool call. The user can see the pipeline executing and intervene at any point.
+
+**Default behavior:** When in doubt, create a research brief. It's better to over-produce briefs than to leave analysis unrecorded.

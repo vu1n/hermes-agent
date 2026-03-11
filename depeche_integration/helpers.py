@@ -15,6 +15,7 @@ async def with_depeche_conn(handler, **handler_kwargs) -> str:
     conn = get_db(settings.database_url)
     try:
         result = await handler(conn=conn, settings=settings, **handler_kwargs)
+        conn.commit()
         return json.dumps(result)
     finally:
         conn.close()
