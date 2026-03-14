@@ -67,6 +67,7 @@ _HERMES_CORE_TOOLS = [
     # Depeche personal intelligence (gated on DATABASE_URL via check_fn)
     "depeche_query", "depeche_ingest", "depeche_dossier",
     "depeche_intake", "depeche_research", "depeche_publish_brief",
+    "depeche_wire", "depeche_watch", "depeche_notify",
 ]
 
 
@@ -206,8 +207,8 @@ TOOLSETS = {
     },
 
     "depeche": {
-        "description": "Personal intelligence tools: knowledge search, article ingestion, research, dossier generation, and publishing",
-        "tools": ["depeche_query", "depeche_ingest", "depeche_dossier", "depeche_intake", "depeche_research", "depeche_publish_brief"],
+        "description": "Personal intelligence tools: knowledge search, article ingestion, research, dossier generation, publishing, and real-time wire service",
+        "tools": ["depeche_query", "depeche_ingest", "depeche_dossier", "depeche_intake", "depeche_research", "depeche_publish_brief", "depeche_wire", "depeche_watch", "depeche_notify"],
         "includes": []
     },
 

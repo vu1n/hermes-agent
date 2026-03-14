@@ -101,6 +101,9 @@ def _discover_tools():
         "tools.depeche_intake",
         "tools.depeche_research",
         "tools.depeche_publish_brief",
+        "tools.depeche_wire",
+        "tools.depeche_watch",
+        "tools.depeche_notify",
     ]
     import importlib
     for mod_name in _modules:

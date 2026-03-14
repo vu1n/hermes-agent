@@ -9,10 +9,11 @@ import os
 async def with_depeche_conn(handler, **handler_kwargs) -> str:
     """Acquire settings + conn, call an async depeche handler, return JSON string."""
     from depeche.config import get_settings
-    from depeche.db.connection import get_db
+    from depeche.db.connection import get_db, init_db
 
     settings = get_settings()
     conn = get_db(settings.database_url)
+    init_db(conn)
     try:
         result = await handler(conn=conn, settings=settings, **handler_kwargs)
         conn.commit()
